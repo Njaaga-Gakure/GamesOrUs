@@ -12,14 +12,12 @@ namespace CartService.Controllers
     [ApiController]
     public class CartController : ControllerBase
     {
-        private readonly IMapper _mapper;
         private readonly ICart _cartService;
         private readonly IProduct _productService;
         private readonly ResponseDTO _response;
 
-        public CartController(IMapper mapper, ICart cartService, IProduct productService)
+        public CartController(ICart cartService, IProduct productService)
         {
-            _mapper = mapper;
             _cartService = cartService;
             _productService = productService;
             _response = new ResponseDTO();
@@ -69,7 +67,7 @@ namespace CartService.Controllers
                 {
                     if (item.ProductQuantity == 0)
                     {
-                        _response.ErrorMessage = "You must at least purchase one product :(";
+                        _response.ErrorMessage = "You must at least add one product to the cart :(";
                         return BadRequest(_response);
                     }
                     var cartItem = new CartItem()
@@ -136,6 +134,57 @@ namespace CartService.Controllers
             }
         }
 
+        [HttpPatch]
+        public async Task<ActionResult<ResponseDTO>> ReduceCartItemQuantity(AddToCartDTO item)
+        {
+            try
+            {
+                var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    _response.ErrorMessage = "You are not authorized";
+                    return StatusCode(403, _response);
+                }
+
+                var cart = await _cartService.GetCartByUserId(new Guid(userId));
+                if (cart == null || cart.CartItems.Count == 0)
+                {
+                    _response.Result = "Your Cart is Empty :(";
+                    return Ok(_response);
+                }
+                var cartItem = cart.CartItems.Find(cartItem => cartItem.ProductId == item.ProductId);
+
+                if (cartItem == null)
+                {
+                    _response.ErrorMessage = "The product is not in your cart :(";
+                    return NotFound(_response);
+                }
+
+                var newQuantity = cartItem.ProductQuantity - item.ProductQuantity;
+
+                if (newQuantity <= 0)
+                {
+                    // check this error
+                    await _cartService.RemoveProductFromCart(item.ProductId);
+                    var product = await _productService.GetProductById(item.ProductId);
+                    await _cartService.UpdateCartTotals(cart.CartId, -(cartItem.ProductUnitPrice * cartItem.ProductQuantity));
+                    _response.Result = $"{product.Name} has been removed from your cart";
+                    return Ok(_response);
+                }
+
+                await _cartService.UpdateCartItemQuantity(cartItem.Id, newQuantity);
+                await _cartService.UpdateCartTotals(cart.CartId, -(cartItem.ProductUnitPrice * item.ProductQuantity));
+                _response.Result = "Item quantity Updated Successfully :)";
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return StatusCode(500, _response);
+            }
+        }
+
         [HttpDelete("{productId}")]
         [Authorize]
         public async Task<ActionResult<ResponseDTO>> RemoveItemFromCart(Guid productId)
@@ -144,7 +193,7 @@ namespace CartService.Controllers
 
             if (!isProductRemoved)
             {
-                _response.ErrorMessage = "The product you are trying to remove does not exist :(";
+                _response.ErrorMessage = "The product you are trying to remove does not exist in your cart :(";
                 return NotFound(_response);
             }
             var product = await _productService.GetProductById(productId);

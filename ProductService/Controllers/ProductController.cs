@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProductService.Models;
 using ProductService.Models.DTOs;
@@ -23,6 +23,7 @@ namespace ProductService.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<ResponseDTO>> AddProduct(ProductDTO newProduct)
         {
             try
@@ -39,6 +40,8 @@ namespace ProductService.Controllers
             }
         }
 
+        // Note to self: if GET requests are authorized, cannot make request from another service
+        // ask about this
         [HttpGet]
         public async Task<ActionResult<ResponseDTO>> GetAllProducts()
         {
@@ -77,6 +80,7 @@ namespace ProductService.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize]
         public async Task<ActionResult<ResponseDTO>> UpdateProduct(Guid id, ProductDTO updateProduct)
         {
             try
@@ -98,6 +102,7 @@ namespace ProductService.Controllers
         }
 
         [HttpDelete]
+        [Authorize]
         public async Task<ActionResult<ResponseDTO>> DeleteProduct(Guid id)
         {
             try
