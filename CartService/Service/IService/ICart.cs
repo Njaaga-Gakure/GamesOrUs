@@ -10,6 +10,7 @@ namespace CartService.Service.IService
         Task AddToCart(CartItem Item);
         Task UpdateCartTotals(Guid cartId, decimal amount);
         Task UpdateCartItemQuantity(Guid id, int quantity);
+        Task<bool> RemoveProductFromCart(Guid productId);
         Task<bool> DeleteCart(Guid cartId);
     }
 }

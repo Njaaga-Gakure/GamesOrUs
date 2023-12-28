@@ -46,13 +46,13 @@ namespace CartService.Controllers
                     _response.ErrorMessage = "The product you are trying to add does not exist :(";
                     return NotFound(_response);
                 }
-               
-                if (item.ProductQuantity > product.Stock) 
+
+                if (item.ProductQuantity > product.Stock)
                 {
                     _response.ErrorMessage = "The quantity you want exceeds the available stock:(";
                     return BadRequest(_response);
                 }
-                
+
                 // check if user has already added a product to cart
                 var cart = await _cartService.GetCartByUserId(item.UserId);
                 if (cart == null)
@@ -61,9 +61,11 @@ namespace CartService.Controllers
                     newCart.UserId = new Guid(userId);
                     await _cartService.CreateCart(newCart);
                     cart = await _cartService.GetCartByUserId(item.UserId);
-                   
+
                 }
                 var cartProduct = cart.CartItems.Find(cartI => cartI.ProductId == product.Id);
+
+                // check if it's a new product or a product existing in the cart
                 if (cartProduct == null)
                 {
                     if (item.ProductQuantity == 0)
@@ -120,7 +122,7 @@ namespace CartService.Controllers
 
                 var cart = await _cartService.GetCartByUserId(new Guid(userId));
 
-                if (cart == null) 
+                if (cart == null)
                 {
                     _response.Result = "Your Cart is Empty :(";
                     return Ok(_response);
@@ -133,6 +135,23 @@ namespace CartService.Controllers
                 _response.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 return StatusCode(500, _response);
             }
+        }
+
+        [HttpDelete("{productId}")]
+        [Authorize]
+        public async Task<ActionResult<ResponseDTO>> RemoveItemFromCart(Guid productId)
+        {
+            var isProductRemoved = await _cartService.RemoveProductFromCart(productId);
+
+            if (!isProductRemoved)
+            {
+                _response.ErrorMessage = "The product you are trying to remove does not exist :(";
+                return NotFound(_response);
+            }
+            var product = await _productService.GetProductById(productId);
+
+            _response.Result = $"{product.Name} has been removed from your cart";
+            return Ok(_response);
         }
     }
 }

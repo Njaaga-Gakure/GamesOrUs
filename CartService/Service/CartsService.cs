@@ -66,5 +66,17 @@ namespace CartService.Service
             cartItem.ProductQuantity = quantity;
             await _context.SaveChangesAsync();  
         }
+
+        public async Task<bool> RemoveProductFromCart(Guid productId)
+        {
+            var cartItem = await _context.CartItems.Where(cartItem => cartItem.ProductId == productId).FirstOrDefaultAsync();
+            if (cartItem != null)
+            {
+                _context.CartItems.Remove(cartItem);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            return false;   
+        }
     }
 }
