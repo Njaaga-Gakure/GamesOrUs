@@ -31,9 +31,8 @@ namespace CartService.Controllers
         {
             try
             {
-                // Check if userId provided in the DTO matches the auth user 
                 var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
-                if (userId == null || new Guid(userId) != item.UserId)
+                if (userId == null)
                 {
                     _response.ErrorMessage = "You are not authorized";
                     return StatusCode(403, _response);
@@ -54,13 +53,13 @@ namespace CartService.Controllers
                 }
 
                 // check if user has already added a product to cart
-                var cart = await _cartService.GetCartByUserId(item.UserId);
+                var cart = await _cartService.GetCartByUserId(new Guid(userId));
                 if (cart == null)
                 {
                     var newCart = new Cart();
                     newCart.UserId = new Guid(userId);
                     await _cartService.CreateCart(newCart);
-                    cart = await _cartService.GetCartByUserId(item.UserId);
+                    cart = await _cartService.GetCartByUserId(new Guid(userId));
 
                 }
                 var cartProduct = cart.CartItems.Find(cartI => cartI.ProductId == product.Id);
@@ -97,7 +96,7 @@ namespace CartService.Controllers
                 }
 
                 await _cartService.UpdateCartTotals(cart.CartId, (product.Price * item.ProductQuantity));
-                _response.Result = "Product Added Successfully :)";
+                _response.Result = "Product Added To Cart Successfully :)";
                 return Ok(_response);
             }
             catch (Exception ex)
@@ -122,7 +121,7 @@ namespace CartService.Controllers
 
                 var cart = await _cartService.GetCartByUserId(new Guid(userId));
 
-                if (cart == null)
+                if (cart == null || cart.CartItems.Count == 0)
                 {
                     _response.Result = "Your Cart is Empty :(";
                     return Ok(_response);
