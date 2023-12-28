@@ -29,6 +29,7 @@ namespace CartService.Controllers
         {
             try
             {
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
                 var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
                 if (userId == null)
                 {
@@ -37,7 +38,7 @@ namespace CartService.Controllers
                 }
 
                 // check if product exists 
-                var product = await _productService.GetProductById(item.ProductId);
+                var product = await _productService.GetProductById(item.ProductId, token);
                 if (product == null)
                 {
                     _response.ErrorMessage = "The product you are trying to add does not exist :(";
@@ -139,6 +140,7 @@ namespace CartService.Controllers
         {
             try
             {
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
                 var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
                 if (userId == null)
                 {
@@ -166,7 +168,7 @@ namespace CartService.Controllers
                 {
                     // check this error
                     await _cartService.RemoveProductFromCart(item.ProductId);
-                    var product = await _productService.GetProductById(item.ProductId);
+                    var product = await _productService.GetProductById(item.ProductId, token);
                     await _cartService.UpdateCartTotals(cart.CartId, -(cartItem.ProductUnitPrice * cartItem.ProductQuantity));
                     _response.Result = $"{product.Name} has been removed from your cart";
                     return Ok(_response);
@@ -189,15 +191,14 @@ namespace CartService.Controllers
         [Authorize]
         public async Task<ActionResult<ResponseDTO>> RemoveItemFromCart(Guid productId)
         {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
             var isProductRemoved = await _cartService.RemoveProductFromCart(productId);
-
             if (!isProductRemoved)
             {
                 _response.ErrorMessage = "The product you are trying to remove does not exist in your cart :(";
                 return NotFound(_response);
             }
-            var product = await _productService.GetProductById(productId);
-
+            var product = await _productService.GetProductById(productId, token);
             _response.Result = $"{product.Name} has been removed from your cart";
             return Ok(_response);
         }

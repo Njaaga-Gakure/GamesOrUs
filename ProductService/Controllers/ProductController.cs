@@ -42,7 +42,11 @@ namespace ProductService.Controllers
 
         // Note to self: if GET requests are authorized, cannot make request from another service
         // ask about this
+        // never mind: passed token with the AddToCartDTO
+        // then added the token to the client before making the GET request
+        // Edit: got token from HttpContext
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<ResponseDTO>> GetAllProducts()
         {
             try
@@ -59,6 +63,7 @@ namespace ProductService.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<ResponseDTO>> GetSingleProduct(Guid id)
         {
             try

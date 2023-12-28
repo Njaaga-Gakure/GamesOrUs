@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34221.43
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthService", "AuthService\AuthService.csproj", "{5F91F6E1-BAB5-471D-B6AC-EEE4597735EE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthService", "AuthService\AuthService.csproj", "{5F91F6E1-BAB5-471D-B6AC-EEE4597735EE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductService", "ProductService\ProductService.csproj", "{70F8D6FD-761F-4BA8-82C5-3675D7CE50BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProductService", "ProductService\ProductService.csproj", "{70F8D6FD-761F-4BA8-82C5-3675D7CE50BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CartService", "CartService\CartService.csproj", "{BBDE2611-73AA-4F08-8FFA-3227AB0423A3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartService", "CartService\CartService.csproj", "{BBDE2611-73AA-4F08-8FFA-3227AB0423A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService", "OrderService\OrderService.csproj", "{8D31F90C-4099-4108-92AD-645EC6755AB7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService", "OrderService\OrderService.csproj", "{8D31F90C-4099-4108-92AD-645EC6755AB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamesOrUsMessageBus", "GamesOrUsMessageBus\GamesOrUsMessageBus.csproj", "{455D3D8A-754C-4C6F-8929-57C451E1547A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{8D31F90C-4099-4108-92AD-645EC6755AB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D31F90C-4099-4108-92AD-645EC6755AB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D31F90C-4099-4108-92AD-645EC6755AB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{455D3D8A-754C-4C6F-8929-57C451E1547A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{455D3D8A-754C-4C6F-8929-57C451E1547A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{455D3D8A-754C-4C6F-8929-57C451E1547A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{455D3D8A-754C-4C6F-8929-57C451E1547A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

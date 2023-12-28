@@ -1,6 +1,8 @@
-﻿using CartService.Models.DTOs;
+﻿using Azure.Core;
+using CartService.Models.DTOs;
 using CartService.Service.IService;
 using Newtonsoft.Json;
+using System.Net.Http.Headers;
 
 namespace CartService.Service
 {
@@ -12,9 +14,10 @@ namespace CartService.Service
         {
             _httpClientFactory = clientFactory;
         }
-        public async Task<ProductDTO> GetProductById(Guid productId)
+        public async Task<ProductDTO> GetProductById(Guid productId, string Token)
         {
             var client = _httpClientFactory.CreateClient("Product");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", Token);
             var response = await client.GetAsync($"{productId}");
             var content = await response.Content.ReadAsStringAsync();
             var responseDTO = JsonConvert.DeserializeObject<ResponseDTO>(content);
