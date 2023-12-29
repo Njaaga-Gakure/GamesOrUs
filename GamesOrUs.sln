@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CartService", "CartService\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderService", "OrderService\OrderService.csproj", "{8D31F90C-4099-4108-92AD-645EC6755AB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GamesOrUsMessageBus", "GamesOrUsMessageBus\GamesOrUsMessageBus.csproj", "{455D3D8A-754C-4C6F-8929-57C451E1547A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesOrUsMessageBus", "GamesOrUsMessageBus\GamesOrUsMessageBus.csproj", "{455D3D8A-754C-4C6F-8929-57C451E1547A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailsService.cs", "EmailsService.cs\EmailsService.cs.csproj", "{25896E89-DD27-4501-87E8-DFB97DB6FADD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{455D3D8A-754C-4C6F-8929-57C451E1547A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{455D3D8A-754C-4C6F-8929-57C451E1547A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{455D3D8A-754C-4C6F-8929-57C451E1547A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25896E89-DD27-4501-87E8-DFB97DB6FADD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25896E89-DD27-4501-87E8-DFB97DB6FADD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25896E89-DD27-4501-87E8-DFB97DB6FADD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25896E89-DD27-4501-87E8-DFB97DB6FADD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
