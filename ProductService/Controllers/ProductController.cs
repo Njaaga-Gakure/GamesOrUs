@@ -23,7 +23,7 @@ namespace ProductService.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResponseDTO>> AddProduct(ProductDTO newProduct)
         {
             try
@@ -85,7 +85,7 @@ namespace ProductService.Controllers
         }
 
         [HttpPatch("{id}")]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResponseDTO>> UpdateProduct(Guid id, ProductDTO updateProduct)
         {
             try
@@ -107,7 +107,7 @@ namespace ProductService.Controllers
         }
 
         [HttpDelete]
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ResponseDTO>> DeleteProduct(Guid id)
         {
             try
