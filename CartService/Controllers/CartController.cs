@@ -14,12 +14,14 @@ namespace CartService.Controllers
     {
         private readonly ICart _cartService;
         private readonly IProduct _productService;
+        private readonly ICoupon _couponService;
         private readonly ResponseDTO _response;
 
-        public CartController(ICart cartService, IProduct productService)
+        public CartController(ICart cartService, IProduct productService, ICoupon couponService)
         {
             _cartService = cartService;
             _productService = productService;
+            _couponService = couponService;
             _response = new ResponseDTO();
         }
 
@@ -186,7 +188,63 @@ namespace CartService.Controllers
                 return StatusCode(500, _response);
             }
         }
+        [HttpPatch("{couponCode}")]
+        [Authorize]
+        public async Task<ActionResult<ResponseDTO>> ApplyCoupon(string couponCode)
+        {
+            try
+            {
+                var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (userId == null)
+                {
+                    _response.ErrorMessage = "You are not authorized";
+                    return StatusCode(403, _response);
+                }
+                // get token from auth headers
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
+                // check if coupon exists
+                var coupon = await _couponService.GetCouponByCouponCode(couponCode, token);
 
+                if (coupon == null)
+                {
+                    _response.ErrorMessage = "Coupon Not Found";
+                    return NotFound(_response);
+                }
+
+                var cart = await _cartService.GetCartByUserId(new Guid(userId));
+
+                if (cart == null)
+                {
+                    _response.ErrorMessage = "Your Cart is Empty :(";
+                    return BadRequest(_response);
+                }
+
+                if (!string.IsNullOrWhiteSpace(cart.CouponCode))
+                {
+                    _response.ErrorMessage = "You already have a coupon applied :(";
+                    return BadRequest(_response);
+                }
+
+                if (cart.TotalAmount < coupon.CouponMinimumAmount)
+                {
+                    _response.ErrorMessage = $"Purchase games worth Ksh {coupon.CouponMinimumAmount - cart.TotalAmount} more to apply this coupon :(";
+                    return BadRequest(_response);
+                }
+
+                await _cartService.UpdateCartTotals(cart.CartId, -(coupon.CouponDiscount));
+                await _cartService.UpdateCartCouponDetails(cart.CartId, coupon.CouponDiscount, coupon.CouponCode);
+                _response.Result = "Coupon Applied Successfully :)";
+                return Ok(_response);
+
+            }
+            catch (Exception ex)
+            {
+                _response.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return StatusCode(500, _response);
+            }
+
+
+        }
         [HttpDelete("{productId}")]
         [Authorize]
         public async Task<ActionResult<ResponseDTO>> RemoveItemFromCart(Guid productId)

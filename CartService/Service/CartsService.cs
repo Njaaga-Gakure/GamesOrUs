@@ -32,9 +32,12 @@ namespace CartService.Service
             var cart = await _context.Carts
                                 .Where(cart => cart.UserId == UserId)
                                 .Include(cart => cart.CartItems)
-                                .Select(cart => new CartResponseDTO() {
+                                .Select(cart => new CartResponseDTO()
+                                {
                                     CartId = cart.Id,
                                     UserId = cart.UserId,
+                                    CouponCode = cart.CouponCode,
+                                    Discount = cart.Discount,
                                     CartItems = _mapper.Map<List<CartItemDTO>>(cart.CartItems.ToList()),
                                     TotalAmount = cart.TotalAmount
                                 })
@@ -46,7 +49,7 @@ namespace CartService.Service
         {
             var cart = await _context.Carts.Where(cart => cart.Id == cartId).FirstOrDefaultAsync();
             cart.TotalAmount += amount;
-            await _context.SaveChangesAsync();  
+            await _context.SaveChangesAsync();
         }
         public async Task<bool> DeleteCart(Guid cartId)
         {
@@ -57,14 +60,14 @@ namespace CartService.Service
                 await _context.SaveChangesAsync();
                 return true;
             }
-            return false;  
+            return false;
         }
 
         public async Task UpdateCartItemQuantity(Guid id, int quantity)
         {
             var cartItem = await _context.CartItems.Where(cartItem => cartItem.Id == id).FirstOrDefaultAsync();
             cartItem.ProductQuantity = quantity;
-            await _context.SaveChangesAsync();  
+            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> RemoveProductFromCart(Guid productId)
@@ -76,7 +79,15 @@ namespace CartService.Service
                 await _context.SaveChangesAsync();
                 return true;
             }
-            return false;   
+            return false;
+        }
+
+        public async Task UpdateCartCouponDetails(Guid id, decimal discount = 0, string? couponCode = null)
+        {
+            var cart = await _context.Carts.Where(cart => cart.Id == id).FirstOrDefaultAsync();
+            cart.CouponCode = couponCode;
+            cart.Discount = discount;
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -21,11 +21,13 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // tell httpClient about baseURL
 builder.Services.AddHttpClient("Product", c => c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServiceURL:ProductsBaseURL")));
+builder.Services.AddHttpClient("Coupon", c => c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServiceURL:CouponsBaseURL")));
 
 // register services for DI injection
 
 builder.Services.AddScoped<ICart, CartsService>();
 builder.Services.AddScoped<IProduct, ProductService>();
+builder.Services.AddScoped<ICoupon, CouponService>();  
 
 
 builder.Services.AddControllers();

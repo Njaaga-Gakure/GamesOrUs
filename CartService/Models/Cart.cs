@@ -9,6 +9,10 @@ namespace CartService.Models
         [Key]
         public Guid Id { get; set; }
         public Guid UserId { get; set; }
+        public string CouponCode { get; set; } = string.Empty;
+
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Discount { get; set; }
         public List<CartItem> CartItems { get; set; } = new List<CartItem>();
 
         [Column(TypeName = "decimal(10,2)")]
