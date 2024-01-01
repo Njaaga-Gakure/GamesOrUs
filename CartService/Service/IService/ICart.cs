@@ -11,8 +11,8 @@ namespace CartService.Service.IService
         Task UpdateCartTotals(Guid cartId, decimal amount);
         Task UpdateCartItemQuantity(Guid id, int quantity);
 
-        Task UpdateCartCouponDetails(Guid id, decimal discount, string? couponCode = null);
-        Task<bool> RemoveProductFromCart(Guid productId);
+        Task UpdateCartCouponDetails(Guid id, decimal discount, string couponCode);
+        Task RemoveProductFromCart(Guid productId);
         Task<bool> DeleteCart(Guid cartId);
     }
 }

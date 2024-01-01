@@ -168,6 +168,7 @@ namespace CartService.Controllers
         // To do: If user had a coupon applied and reduces a product's quantity from cart
         // add the the total amount is below the coupon minimum amount
         // remove the applied coupon
+        // Edit: done the above in second draft
         [HttpPatch]
         public async Task<ActionResult<ResponseDTO>> ReduceCartItemQuantity(AddToCartDTO item)
         {
@@ -202,14 +203,32 @@ namespace CartService.Controllers
                     // check this error
                     // Edit: found error. Needed to pass token to http client
                     await _cartService.RemoveProductFromCart(item.ProductId);
+                    var totalPriceToRemove = cartItem.ProductUnitPrice * cartItem.ProductQuantity;
                     var product = await _productService.GetProductById(item.ProductId, token);
-                    await _cartService.UpdateCartTotals(cart.CartId, -(cartItem.ProductUnitPrice * cartItem.ProductQuantity));
+                    await _cartService.UpdateCartTotals(cart.CartId, -totalPriceToRemove);
+                    if (!string.IsNullOrWhiteSpace(cart.CouponCode))
+                    {
+                        var coupon = await _couponService.GetCouponByCouponCode(cart.CouponCode, token);
+                        if ((cart.TotalAmount - totalPriceToRemove) < coupon.CouponMinimumAmount)
+                        {
+                            await _cartService.UpdateCartCouponDetails(cart.CartId, 0, "");
+                        }
+                    }
                     _response.Result = $"{product.Name} has been removed from your cart";
                     return Ok(_response);
                 }
 
                 await _cartService.UpdateCartItemQuantity(cartItem.Id, newQuantity);
-                await _cartService.UpdateCartTotals(cart.CartId, -(cartItem.ProductUnitPrice * item.ProductQuantity));
+                var totalPriceRemoved = cartItem.ProductUnitPrice * item.ProductQuantity;
+                await _cartService.UpdateCartTotals(cart.CartId, -totalPriceRemoved);
+                if (cart.CouponCode != null)
+                {
+                    var coupon = await _couponService.GetCouponByCouponCode(cart.CouponCode, token);
+                    if ((cart.TotalAmount - totalPriceRemoved) < coupon.CouponMinimumAmount)
+                    {
+                        await _cartService.UpdateCartCouponDetails(cart.CartId, 0, "");
+                    }
+                }
                 _response.Result = "Item quantity Updated Successfully :)";
 
                 return Ok(_response);
@@ -280,16 +299,44 @@ namespace CartService.Controllers
         // To do: If user had a coupon applied` and removed a product from cart
         // add the the total amount is below the coupon minimum amount
         // remove the applied coupon
+        // Edit: done the above in second draft
+
         [HttpDelete("{productId}")]
         [Authorize]
         public async Task<ActionResult<ResponseDTO>> RemoveItemFromCart(Guid productId)
         {
             var token = HttpContext.Request.Headers["Authorization"].ToString().Split(" ")[1];
-            var isProductRemoved = await _cartService.RemoveProductFromCart(productId);
-            if (!isProductRemoved)
+            var userId = User.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (userId == null)
             {
-                _response.ErrorMessage = "The product you are trying to remove does not exist in your cart :(";
+                _response.ErrorMessage = "You are not authorized";
+                return StatusCode(403, _response);
+            }
+
+            var cart = await _cartService.GetCartByUserId(new Guid(userId));
+            if (cart == null || cart.CartItems.Count == 0)
+            {
+                _response.Result = "Your Cart is Empty :(";
+                return BadRequest(_response);
+            }
+
+            var cartItem = cart.CartItems.Find(cartItem => cartItem.ProductId == productId);
+            if (cartItem == null)
+            {
+                _response.ErrorMessage = "The product is not in your cart :(";
                 return NotFound(_response);
+            }
+            var totalAmountRemoved = cartItem.ProductUnitPrice * cartItem.ProductQuantity;
+            await _cartService.RemoveProductFromCart(productId);
+            await _cartService.UpdateCartTotals(cart.CartId, -(totalAmountRemoved));
+            if (!string.IsNullOrWhiteSpace(cart.CouponCode))
+            {
+                var coupon = await _couponService.GetCouponByCouponCode(cart.CouponCode, token);
+                cart = await _cartService.GetCartByUserId(new Guid(userId));
+                if (cart.TotalAmount < coupon.CouponMinimumAmount)
+                {
+                    await _cartService.UpdateCartCouponDetails(cart.CartId, 0, "");
+                }
             }
             var product = await _productService.GetProductById(productId, token);
             _response.Result = $"{product.Name} has been removed from your cart";

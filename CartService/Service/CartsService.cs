@@ -39,7 +39,8 @@ namespace CartService.Service
                                     UserId = cart.UserId,
                                     CouponCode = cart.CouponCode,
                                     Discount = cart.Discount,
-                                    CartItems = _mapper.Map<List<CartItemDTO>>(cart.CartItems.Select(cartItem => new CartItemDTO() { 
+                                    CartItems = _mapper.Map<List<CartItemDTO>>(cart.CartItems.Select(cartItem => new CartItemDTO()
+                                    {
                                         Id = cartItem.Id,
                                         ProductId = cartItem.ProductId,
                                         ProductName = cartItem.ProductName,
@@ -48,7 +49,7 @@ namespace CartService.Service
                                         ProductUnitPrice = cartItem.ProductUnitPrice,
                                         ProductQuantity = cartItem.ProductQuantity,
                                         ProductImage = cartItem.ProductImages[0].Image
-                                    } )),
+                                    })),
                                     TotalAmount = cart.TotalAmount
                                 })
                                 .FirstOrDefaultAsync();
@@ -80,19 +81,16 @@ namespace CartService.Service
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> RemoveProductFromCart(Guid productId)
+        public async Task RemoveProductFromCart(Guid productId)
         {
             var cartItem = await _context.CartItems.Where(cartItem => cartItem.ProductId == productId).FirstOrDefaultAsync();
-            if (cartItem != null)
-            {
-                _context.CartItems.Remove(cartItem);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
+
+            _context.CartItems.Remove(cartItem);
+            await _context.SaveChangesAsync();
+
         }
 
-        public async Task UpdateCartCouponDetails(Guid id, decimal discount = 0, string? couponCode = null)
+        public async Task UpdateCartCouponDetails(Guid id, decimal discount, string couponCode)
         {
             var cart = await _context.Carts.Where(cart => cart.Id == id).FirstOrDefaultAsync();
             cart.CouponCode = couponCode;
