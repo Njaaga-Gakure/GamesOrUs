@@ -166,7 +166,7 @@ namespace CartService.Controllers
 
 
         // To do: If user had a coupon applied and reduces a product's quantity from cart
-        // add the the total amount is below the coupon minimum amount
+        // and the total amount is below the coupon minimum amount
         // remove the applied coupon
         // Edit: done the above in second draft
         [HttpPatch]
@@ -297,7 +297,7 @@ namespace CartService.Controllers
         }
 
         // To do: If user had a coupon applied` and removed a product from cart
-        // add the the total amount is below the coupon minimum amount
+        // and the total amount is below the coupon minimum amount
         // remove the applied coupon
         // Edit: done the above in second draft
 

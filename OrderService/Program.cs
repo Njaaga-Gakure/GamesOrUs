@@ -1,3 +1,4 @@
+using GamesOrUsMessageBus;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Data;
 using OrderService.Extensions;
@@ -34,6 +35,8 @@ builder.Services.AddHttpClient("Cart", c => c.BaseAddress = new Uri(builder.Conf
 // register for di
 builder.Services.AddScoped<IOrder, OrdersService>();
 builder.Services.AddScoped<ICart, CartService>();
+builder.Services.AddScoped<IMessageBus, MessageBus>();
+
 
 var app = builder.Build();
 

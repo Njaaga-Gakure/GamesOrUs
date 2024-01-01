@@ -31,4 +31,8 @@
     <Folder Include="Profiles\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GamesOrUsMessageBus\GamesOrUsMessageBus.csproj" />
+  </ItemGroup>
+
 </Project>

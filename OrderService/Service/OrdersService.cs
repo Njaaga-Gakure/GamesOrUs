@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using GamesOrUsMessageBus;
+using Microsoft.EntityFrameworkCore;
 using OrderService.Data;
 using OrderService.Models;
 using OrderService.Models.DTOs;
@@ -14,11 +15,15 @@ namespace OrderService.Service
 
         private readonly OrderContext _context;
         private readonly ICart _cartService;
+        private readonly IMessageBus _messageBus;
+        private readonly IConfiguration _configuration;
 
-        public OrdersService(OrderContext context, ICart cartService)
+        public OrdersService(OrderContext context, ICart cartService, IMessageBus messageBus, IConfiguration configuration)
         {
             _context = context;
-            _cartService = cartService; 
+            _cartService = cartService;
+            _messageBus = messageBus;
+            _configuration = configuration;
         }
         public async Task<string> AddNewOrder(Order order)
         {
@@ -54,7 +59,7 @@ namespace OrderService.Service
                 {
                     PriceData = new SessionLineItemPriceDataOptions()
                     {
-                        UnitAmount = (long) cartItem.ProductUnitPrice * 100,
+                        UnitAmount = (long)cartItem.ProductUnitPrice * 100,
                         Currency = "kes",
 
                         // Second Draft: Got Image from Cart Item
@@ -73,7 +78,7 @@ namespace OrderService.Service
 
                 options.LineItems.Add(item);
             }
-           
+
 
             var DiscountObject = new List<SessionDiscountOptions>()
             {
@@ -92,7 +97,7 @@ namespace OrderService.Service
             var service = new SessionService();
             Session session = service.Create(options);
 
-          
+
 
             stripeRequest.StripeSessionURL = session.Url;
             stripeRequest.StripeSessionId = session.Id;
@@ -122,7 +127,18 @@ namespace OrderService.Service
                 order.Status = "Paid";
                 order.PaymentIntent = paymentIntent.Id;
                 await _context.SaveChangesAsync();
-                await _cartService.DeleteCart(cart.Id, token);
+                var reward = new RewardDTO()
+                {
+                    OrderId = order.Id,
+                    OrderTotal = order.TotalAmount,
+                    RewardPoints = (int)Math.Ceiling(order.TotalAmount / 1000),
+                    Name = user.Name,
+                    Email = user.Email
+                };
+                var topicName = _configuration.GetValue<string>("ServiceBus:TopicName");
+                var connectionString = _configuration.GetValue<string>("ServiceBus:AzureConnectionString");
+                await _messageBus.PublishMessage(reward, topicName, connectionString);
+                // await _cartService.DeleteCart(cart.Id, token);
                 return true;
 
             }

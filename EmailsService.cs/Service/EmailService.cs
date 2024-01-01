@@ -19,7 +19,7 @@ namespace EmailsService.Service
             _password = _configuration.GetValue<string>("AzureEmailSettings:Password");
         }
 
-        public async Task sendEmail(NewUserMessageDTO user, string message)
+        public async Task sendEmail(NewUserMessageDTO user, string message, string? subject = "Find your next gaming adventure here!")
         {
             var mimeMessage = new MimeMessage();
 
@@ -27,8 +27,7 @@ namespace EmailsService.Service
 
             mimeMessage.To.Add(new MailboxAddress(user.Name, user.Email));
 
-            mimeMessage.Subject = "Find your next gaming adventure here!";
-
+            mimeMessage.Subject = subject;
             var body = new TextPart("html")
             {
                 Text = message.ToString()
