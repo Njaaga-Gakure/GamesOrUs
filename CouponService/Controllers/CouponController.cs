@@ -5,6 +5,7 @@ using CouponService.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace CouponService.Controllers
 {
@@ -29,13 +30,27 @@ namespace CouponService.Controllers
         {
             try
             {
-                var newCoupon = _mapper.Map<Coupon>(coupon);
+                // clashes with a stripe Class
+                var newCoupon = _mapper.Map<Models.Coupon>(coupon);
                 var response = await _couponService.AddCoupon(newCoupon);
+
+                // adding coupon to stripe
+                var options = new CouponCreateOptions()
+                {
+                    AmountOff = (long)newCoupon.CouponDiscount * 100,
+                    Currency = "kes",
+                    Id = newCoupon.CouponCode,
+                    Name = newCoupon.CouponCode
+                };
+
+                var service = new Stripe.CouponService();
+                service.Create(options); 
+
                 _response.Result = response;
                 return Ok(_response);
 
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 _response.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
                 return StatusCode(500, _response);
@@ -48,9 +63,9 @@ namespace CouponService.Controllers
         {
             try
             {
-              var coupons = await _couponService.GetAllCoupons();
+                var coupons = await _couponService.GetAllCoupons();
                 _response.Result = coupons;
-                return Ok(_response);   
+                return Ok(_response);
             }
             catch (Exception ex)
             {
@@ -108,12 +123,31 @@ namespace CouponService.Controllers
         {
             try
             {
-                var couponExists = await _couponService.UpdateCoupon(couponId, updateCoupon);
-                if (!couponExists)
+                var coupon = await _couponService.GetCouponById(couponId);
+                if (coupon == null)
                 {
                     _response.ErrorMessage = "Coupon Not Found :(";
                     return NotFound(_response);
                 }
+                var previousCouponCode = coupon.CouponCode;
+
+                await _couponService.UpdateCoupon(couponId, updateCoupon);
+                // updating a coupon from stripe
+
+                // delete coupon first
+                var service = new Stripe.CouponService();
+                service.Delete(previousCouponCode);
+
+                // add a new coupon with updated values
+                var options = new CouponCreateOptions()
+                {
+                    AmountOff = (long) updateCoupon.CouponDiscount * 100,
+                    Currency = "kes",
+                    Id = updateCoupon.CouponCode,
+                    Name = updateCoupon.CouponCode
+                };
+                service.Create(options);
+
                 _response.Result = "Coupon Updated Successfully :)";
                 return Ok(_response);
             }
@@ -130,12 +164,20 @@ namespace CouponService.Controllers
         {
             try
             {
-                var couponExists = await _couponService.DeleteCoupon(couponId);
-                if (!couponExists)
+                var coupon = await _couponService.GetCouponById(couponId);
+                if (coupon == null)
                 {
                     _response.ErrorMessage = "Coupon Not Found :(";
                     return NotFound(_response);
                 }
+                await _couponService.DeleteCoupon(couponId);
+
+                // deleting coupon from stripe
+
+                var service = new Stripe.CouponService();
+                service.Delete(coupon.CouponCode);
+
+
                 _response.Result = "Coupon Deleted Successfully :)";
                 return Ok(_response);
             }

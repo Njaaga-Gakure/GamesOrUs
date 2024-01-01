@@ -28,6 +28,9 @@ builder.Services.AddSwaggerGen();
 builder.AddAuth();
 builder.AddSwaggenGenExtension();
 
+// stripe config
+Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetValue<string>("StripeSecrets:SecretKey");
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

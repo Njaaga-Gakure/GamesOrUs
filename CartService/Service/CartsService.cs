@@ -32,13 +32,23 @@ namespace CartService.Service
             var cart = await _context.Carts
                                 .Where(cart => cart.UserId == UserId)
                                 .Include(cart => cart.CartItems)
+                                .ThenInclude(cartItem => cartItem.ProductImages)
                                 .Select(cart => new CartResponseDTO()
                                 {
                                     CartId = cart.Id,
                                     UserId = cart.UserId,
                                     CouponCode = cart.CouponCode,
                                     Discount = cart.Discount,
-                                    CartItems = _mapper.Map<List<CartItemDTO>>(cart.CartItems.ToList()),
+                                    CartItems = _mapper.Map<List<CartItemDTO>>(cart.CartItems.Select(cartItem => new CartItemDTO() { 
+                                        Id = cartItem.Id,
+                                        ProductId = cartItem.ProductId,
+                                        ProductName = cartItem.ProductName,
+                                        ProductDescription = cartItem.ProductDescription,
+                                        ProductGenre = cartItem.ProductGenre,
+                                        ProductUnitPrice = cartItem.ProductUnitPrice,
+                                        ProductQuantity = cartItem.ProductQuantity,
+                                        ProductImage = cartItem.ProductImages[0].Image
+                                    } )),
                                     TotalAmount = cart.TotalAmount
                                 })
                                 .FirstOrDefaultAsync();

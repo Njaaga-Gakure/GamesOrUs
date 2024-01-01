@@ -11,6 +11,7 @@ namespace CartService.Models.DTOs
         public string Description { get; set; } = string.Empty;
 
         public string Genre { get; set; } = string.Empty;
+        public List<ProductImageDTO> ProductImages { get; set; } = new List<ProductImageDTO>();
 
         public int Stock { get; set; }
 

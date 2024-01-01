@@ -50,6 +50,42 @@ namespace ProductService.Migrations
 
                     b.ToTable("Products");
                 });
+
+            modelBuilder.Entity("ProductService.Models.ProductImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("ProductId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("ProductImages");
+                });
+
+            modelBuilder.Entity("ProductService.Models.ProductImage", b =>
+                {
+                    b.HasOne("ProductService.Models.Product", "Product")
+                        .WithMany("ProductImages")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ProductService.Models.Product", b =>
+                {
+                    b.Navigation("ProductImages");
+                });
 #pragma warning restore 612, 618
         }
     }

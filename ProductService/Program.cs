@@ -18,6 +18,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Register service for DI injection
 
 builder.Services.AddScoped<IProduct, ProductsService>();
+builder.Services.AddScoped<IProductImage, ProductImagesService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

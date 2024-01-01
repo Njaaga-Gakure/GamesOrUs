@@ -14,6 +14,8 @@ namespace ProductService.Models
 
         public string Genre { get; set; } = string.Empty;
 
+        public List<ProductImage> ProductImages { get; set; } = new List<ProductImage>();
+
         public int Stock { get; set; }
 
         [Column(TypeName = "decimal(10,2)")]

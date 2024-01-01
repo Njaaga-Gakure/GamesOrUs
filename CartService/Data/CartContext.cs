@@ -9,5 +9,6 @@ namespace CartService.Data
 
         public DbSet<Cart> Carts { get; set; }  
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<CartItemImages> CartItemImages { get; set; }   
      }
 }

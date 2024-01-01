@@ -16,13 +16,15 @@ namespace CartService.Controllers
         private readonly IProduct _productService;
         private readonly ICoupon _couponService;
         private readonly ResponseDTO _response;
+        private readonly IMapper _mapper;
 
-        public CartController(ICart cartService, IProduct productService, ICoupon couponService)
+        public CartController(ICart cartService, IProduct productService, ICoupon couponService, IMapper mapper)
         {
             _cartService = cartService;
             _productService = productService;
             _couponService = couponService;
             _response = new ResponseDTO();
+            _mapper = mapper;   
         }
 
         [HttpPost]
@@ -81,6 +83,7 @@ namespace CartService.Controllers
                         ProductGenre = product.Genre,
                         ProductUnitPrice = product.Price,
                         ProductQuantity = item.ProductQuantity,
+                        ProductImages = _mapper.Map<List<CartItemImages>>(product.ProductImages),
                         CartId = cart.CartId
                     };
                     await _cartService.AddToCart(cartItem);
@@ -137,6 +140,34 @@ namespace CartService.Controllers
             }
         }
 
+        // for external services
+        [HttpGet("{userId}")]
+        [Authorize]
+        public async Task<ActionResult<ResponseDTO>> GetCartByUserId(Guid userId)
+        {
+            try
+            {
+                var cart = await _cartService.GetCartByUserId(userId);
+
+                if (cart == null || cart.CartItems.Count == 0)
+                {
+                    _response.Result = "Your Cart is Empty :(";
+                    return Ok(_response);
+                }
+                _response.Result = cart;
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.ErrorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return StatusCode(500, _response);
+            }
+        }
+
+
+        // To do: If user had a coupon applied and reduces a product's quantity from cart
+        // add the the total amount is below the coupon minimum amount
+        // remove the applied coupon
         [HttpPatch]
         public async Task<ActionResult<ResponseDTO>> ReduceCartItemQuantity(AddToCartDTO item)
         {
@@ -154,7 +185,7 @@ namespace CartService.Controllers
                 if (cart == null || cart.CartItems.Count == 0)
                 {
                     _response.Result = "Your Cart is Empty :(";
-                    return Ok(_response);
+                    return BadRequest(_response);
                 }
                 var cartItem = cart.CartItems.Find(cartItem => cartItem.ProductId == item.ProductId);
 
@@ -169,6 +200,7 @@ namespace CartService.Controllers
                 if (newQuantity <= 0)
                 {
                     // check this error
+                    // Edit: found error. Needed to pass token to http client
                     await _cartService.RemoveProductFromCart(item.ProductId);
                     var product = await _productService.GetProductById(item.ProductId, token);
                     await _cartService.UpdateCartTotals(cart.CartId, -(cartItem.ProductUnitPrice * cartItem.ProductQuantity));
@@ -231,7 +263,6 @@ namespace CartService.Controllers
                     return BadRequest(_response);
                 }
 
-                await _cartService.UpdateCartTotals(cart.CartId, -(coupon.CouponDiscount));
                 await _cartService.UpdateCartCouponDetails(cart.CartId, coupon.CouponDiscount, coupon.CouponCode);
                 _response.Result = "Coupon Applied Successfully :)";
                 return Ok(_response);
@@ -245,6 +276,10 @@ namespace CartService.Controllers
 
 
         }
+
+        // To do: If user had a coupon applied` and removed a product from cart
+        // add the the total amount is below the coupon minimum amount
+        // remove the applied coupon
         [HttpDelete("{productId}")]
         [Authorize]
         public async Task<ActionResult<ResponseDTO>> RemoveItemFromCart(Guid productId)

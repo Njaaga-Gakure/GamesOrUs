@@ -10,6 +10,8 @@ namespace CartService.Models
         public string ProductDescription { get; set; } = string.Empty;
         public string ProductGenre { get; set; } = string.Empty;
 
+        public List<CartItemImages> ProductImages { get; set; } = new List<CartItemImages>();   
+
         [Column(TypeName = "decimal(10,2)")]
         public decimal ProductUnitPrice { get; set; }
         public int ProductQuantity { get; set; }

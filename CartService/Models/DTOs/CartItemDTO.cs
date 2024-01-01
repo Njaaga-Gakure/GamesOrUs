@@ -10,6 +10,7 @@ namespace CartService.Models.DTOs
         public string ProductDescription { get; set; } = string.Empty;
         public string ProductGenre { get; set; } = string.Empty;
 
+        public string ProductImage { get; set; } = string.Empty;
         public decimal ProductUnitPrice { get; set; }
         public int ProductQuantity { get; set; }
     }

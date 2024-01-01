@@ -12,8 +12,8 @@ namespace CouponService.Service.IService
 
         Task<Coupon> GetCouponByCouponCode(string code);
 
-        Task<bool> UpdateCoupon(Guid Id, CouponDTO updateCoupon);
+        Task UpdateCoupon(Guid Id, CouponDTO updateCoupon);
 
-        Task<bool> DeleteCoupon(Guid Id);
+        Task DeleteCoupon(Guid Id);
     }
 }

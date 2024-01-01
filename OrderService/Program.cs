@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using OrderService.Data;
 using OrderService.Extensions;
+using OrderService.Service;
+using OrderService.Service.IService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,15 @@ builder.Services.AddSwaggerGen();
 // Extensions
 builder.AddAuth();
 builder.AddSwaggenGenExtension();
+
+// stripe config
+Stripe.StripeConfiguration.ApiKey = builder.Configuration.GetValue<string>("StripeSecrets:SecretKey");
+
+builder.Services.AddHttpClient("Cart", c => c.BaseAddress = new Uri(builder.Configuration.GetValue<string>("ServiceURL:CartBaseURL")));
+
+// register for di
+builder.Services.AddScoped<IOrder, OrdersService>();
+builder.Services.AddScoped<ICart, CartService>();
 
 var app = builder.Build();
 

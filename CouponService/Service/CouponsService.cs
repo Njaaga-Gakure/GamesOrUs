@@ -36,31 +36,22 @@ namespace CouponService.Service
             return await _context.Coupons.Where(coupon => coupon.Id == Id).FirstOrDefaultAsync();
         }
 
-        public async Task<bool> UpdateCoupon(Guid Id, CouponDTO updateCoupon)
+        public async Task UpdateCoupon(Guid Id, CouponDTO updateCoupon)
         {
             var coupon = await GetCouponById(Id);
-            if (coupon != null)
-            {
-                coupon.CouponCode = updateCoupon.CouponCode;
-                coupon.CouponDiscount = updateCoupon.CouponDiscount;
-                coupon.CouponMinimumAmount = updateCoupon.CouponMinimumAmount;
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
+            coupon.CouponCode = updateCoupon.CouponCode;
+            coupon.CouponDiscount = updateCoupon.CouponDiscount;
+            coupon.CouponMinimumAmount = updateCoupon.CouponMinimumAmount;
+            await _context.SaveChangesAsync();
+
         }
 
-        public async Task<bool> DeleteCoupon(Guid Id)
+        public async Task DeleteCoupon(Guid Id)
         {
             var coupon = await GetCouponById(Id);
+            _context.Coupons.Remove(coupon);
+            await _context.SaveChangesAsync();
 
-            if (coupon != null)
-            {
-                _context.Coupons.Remove(coupon);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            return false;
         }
 
     }

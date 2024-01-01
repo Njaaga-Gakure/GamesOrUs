@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using RewardService.Data;
 using RewardService.Extensions;
+using RewardService.Service;
+using RewardService.Service.IService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,10 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServerConnect
 
 // configure Auto Mapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// register for di
+
+builder.Services.AddScoped<IReward, RewardsService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

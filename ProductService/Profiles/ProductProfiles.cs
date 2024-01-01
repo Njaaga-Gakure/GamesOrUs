@@ -9,6 +9,8 @@ namespace ProductService.Profiles
         public ProductProfiles()
         {
             CreateMap<ProductDTO, Product>().ReverseMap();  
+            CreateMap<ProductImageDTO, ProductImage>().ReverseMap();
+            CreateMap<ProductImage, ImageResponseDTO>().ReverseMap();
         }
     }
 }

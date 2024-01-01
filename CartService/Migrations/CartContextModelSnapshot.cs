@@ -83,6 +83,26 @@ namespace CartService.Migrations
                     b.ToTable("CartItems");
                 });
 
+            modelBuilder.Entity("CartService.Models.CartItemImages", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CartItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Image")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartItemId");
+
+                    b.ToTable("CartItemImages");
+                });
+
             modelBuilder.Entity("CartService.Models.CartItem", b =>
                 {
                     b.HasOne("CartService.Models.Cart", "Cart")
@@ -94,9 +114,25 @@ namespace CartService.Migrations
                     b.Navigation("Cart");
                 });
 
+            modelBuilder.Entity("CartService.Models.CartItemImages", b =>
+                {
+                    b.HasOne("CartService.Models.CartItem", "CartItem")
+                        .WithMany("ProductImages")
+                        .HasForeignKey("CartItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CartItem");
+                });
+
             modelBuilder.Entity("CartService.Models.Cart", b =>
                 {
                     b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("CartService.Models.CartItem", b =>
+                {
+                    b.Navigation("ProductImages");
                 });
 #pragma warning restore 612, 618
         }

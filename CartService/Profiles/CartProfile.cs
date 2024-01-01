@@ -8,7 +8,8 @@ namespace CartService.Profiles
     {
         public CartProfile()
         {
-            CreateMap<CartItem, CartItemDTO>(); 
+            CreateMap<CartItem, CartItemDTO>();
+            CreateMap<ProductImageDTO, CartItemImages>();
         }
     }
 }
