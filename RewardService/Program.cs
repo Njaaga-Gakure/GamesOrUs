@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using RewardService.Data;
 using RewardService.Extensions;
+using RewardService.Messaging;
 using RewardService.Service;
 using RewardService.Service.IService;
 
@@ -13,12 +15,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<RewardContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServerConnection")));
 
-// configure Auto Mapper
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+var optionsBuilder = new DbContextOptionsBuilder<RewardContext>();
+optionsBuilder.UseSqlServer(builder.Configuration.GetConnectionString("SQLServerConnection"));
+builder.Services.AddSingleton(new RewardsService(optionsBuilder.Options));
+
 
 // register for di
+builder.Services.AddSingleton<IRewardServiceBusConsumer, RewardServiceBusConsumer>();
 
-builder.Services.AddScoped<IReward, RewardsService>();
+// configure Auto Mapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -27,10 +33,10 @@ builder.Services.AddSwaggerGen();
 
 // Extensions
 
-builder.AddSwaggenGenExtension();   
+builder.AddSwaggenGenExtension();
 builder.AddAuth();
 
-    var app = builder.Build();
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -41,7 +47,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthentication();    
+app.useAzure();
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

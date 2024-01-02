@@ -59,6 +59,7 @@ namespace EmailsService.Messaging
         }
         private async Task OnOrder(ProcessMessageEventArgs args)
         {
+            
             var message = args.Message;
             var messageBody = Encoding.UTF8.GetString(message.Body);
             var reward = JsonConvert.DeserializeObject<RewardDTO>(messageBody);
@@ -69,10 +70,10 @@ namespace EmailsService.Messaging
                 var orderMessage = new StringBuilder();
                 orderMessage.Append("<div style=\"padding: 1rem; width: 80vw; margin: 0 auto;\">");
                 orderMessage.Append("<img  style=\"width: 100%; height: 40%; display: block; object-fit: cover\" src=\"https://miro.medium.com/v2/resize:fit:5120/1*ZbZYU4Mfq0HBnbyHxWlMtA.png\" />");
-                orderMessage.Append("<div style=\"padding: 1rem\">");
+                orderMessage.Append("<div style=\"padding: 1rem; border: 2px solid black\">");
                 orderMessage.Append($"<p style=\" margin-bottom: .5rem\">Dear {reward.Name},</p>");
-                orderMessage.Append($"<p style=\"margin-bottom: .5rem;\">Your order of Ksh {reward.OrderTotal} has been processed successfully</p>");
-                orderMessage.Append($"<p style=\"margin-bottom: .5rem;\">As of today, you've accumulated a total of {reward.RewardPoints} reward points! Your dedication and continued engagement with our platform has truly paid off.</p>");
+                orderMessage.Append($"<p style=\"margin-bottom: .5rem;\">Your order: {reward.OrderId} of Ksh {reward.OrderTotal} has been processed successfully</p>");
+                orderMessage.Append($"<p style=\"margin-bottom: .5rem;\">You have accumulated {reward.RewardPoints} reward points from this order! Your dedication and continued engagement with our platform has truly paid off.</p>");
                 orderMessage.Append($"<p>Continue shopping to redeem this points for a variety of exiting prices</p>");
                 orderMessage.Append($"<p>Regards,</p>");
                 orderMessage.Append($"<p>GamesOrUs Team</p>");
