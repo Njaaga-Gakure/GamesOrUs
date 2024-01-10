@@ -1,0 +1,16 @@
+﻿<article class="product">
+    <img src="@product.ImageURL" class="product__image" alt="@product.Name" />
+    <div class="product__body">
+        <h5 class="product__title">@product.Name</h5>
+        <p class="product__price">Ksh @product.Price</p>
+    </div>
+    <div class="product__footer">
+        <button class="cart__btn btn btn--secondary">Add to Cart</button>
+    </div>
+</article>
+
+
+@code {
+    [Parameter]
+    public Product product { get; set; } = new Product();
+}

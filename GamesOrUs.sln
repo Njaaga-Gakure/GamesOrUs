@@ -15,9 +15,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesOrUsMessageBus", "Game
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmailsService.cs", "EmailsService.cs\EmailsService.cs.csproj", "{25896E89-DD27-4501-87E8-DFB97DB6FADD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CouponService", "CouponService\CouponService.csproj", "{39F64807-61C4-426C-ABE8-B0AF2AE23FAD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CouponService", "CouponService\CouponService.csproj", "{39F64807-61C4-426C-ABE8-B0AF2AE23FAD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RewardService", "RewardService\RewardService.csproj", "{2410C71C-B1A9-4BD2-AA92-1D7B01D11D2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RewardService", "RewardService\RewardService.csproj", "{2410C71C-B1A9-4BD2-AA92-1D7B01D11D2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GamesOrUsClient", "GamesOrUsClient\GamesOrUsClient.csproj", "{095F4586-CF2C-4B1B-B09B-218484B447C0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GameOrUs.Models", "GameOrUs.Models\GameOrUs.Models.csproj", "{53069AFD-DF86-4BDF-B4F3-C1BD5BDF4923}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +61,14 @@ Global
 		{2410C71C-B1A9-4BD2-AA92-1D7B01D11D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2410C71C-B1A9-4BD2-AA92-1D7B01D11D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2410C71C-B1A9-4BD2-AA92-1D7B01D11D2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{095F4586-CF2C-4B1B-B09B-218484B447C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{095F4586-CF2C-4B1B-B09B-218484B447C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{095F4586-CF2C-4B1B-B09B-218484B447C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{095F4586-CF2C-4B1B-B09B-218484B447C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{53069AFD-DF86-4BDF-B4F3-C1BD5BDF4923}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53069AFD-DF86-4BDF-B4F3-C1BD5BDF4923}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53069AFD-DF86-4BDF-B4F3-C1BD5BDF4923}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53069AFD-DF86-4BDF-B4F3-C1BD5BDF4923}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

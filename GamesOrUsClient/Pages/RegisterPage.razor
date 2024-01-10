@@ -1,0 +1,139 @@
+﻿@page "/"
+@inject HttpClient _httpClient
+@inject NavigationManager _navigate
+@inject IJSRuntime _jsRuntime
+
+<div class="register">
+    <EditForm Model="@(IsMember ? loginUser : registerUser)" class="form" OnValidSubmit="HandleSubmit">
+        <h5 class="form__title">
+            @(IsMember ? "Login Form" : "Register Form")
+        </h5>
+        @if (!IsMember)
+        {
+            <div class="form__row">
+                <label class="form__label" for="firstname">first name</label>
+                <InputText class="form__input" id="firstname" @bind-Value="registerUser.FirstName"></InputText>
+            </div>
+            <div class="form__row">
+                <label class="form__label" for="lastname">last name</label>
+                <InputText class="form__input" id="lastname" @bind-Value="registerUser.LastName"></InputText>
+            </div>
+            <div class="form__row">
+                <label class="form__label" for="phone-number">phone number</label>
+                <InputText class="form__input" id="phone-number" @bind-Value="registerUser.PhoneNumber"></InputText>
+            </div>
+            <div class="form__row">
+                <label class="form__label" for="email">email</label>
+                <InputText class="form__input" id="email" @bind-Value="registerUser.Email"></InputText>
+            </div>
+            <div class="form__row">
+                <label class="form__label" for="price">password</label>
+                <InputText class="form__input" id="price" @bind-Value="registerUser.Password"></InputText>
+            </div>
+        }
+        else
+        {
+            <div class="form__row">
+                <label class="form__label" for="email">email</label>
+                <InputText class="form__input" id="email" @bind-Value="loginUser.Email"></InputText>
+            </div>
+            <div class="form__row">
+                <label class="form__label" for="price">password</label>
+                <InputText class="form__input" id="price" @bind-Value="loginUser.Password"></InputText>
+            </div>
+        }
+
+        <button class="btn btn--secondary form__btn">
+            @(IsMember ? "Login" : "Register")
+        </button>
+        @if (IsMember)
+        {
+            <p class="form__fine-print">
+                Not a member yet?
+                <button type="button" @onclick="ToggleMembership" class="member__btn">register</button>
+            </p>
+        }
+        else
+        {
+            <p class="form__fine-print">
+                Already a member?
+                <button type="button" @onclick="ToggleMembership" class="member__btn">login</button>
+            </p>
+        }
+    </EditForm>
+</div>
+
+@code {
+    public List<User> users { get; set; } = new List<User>();
+    public RegisterUser registerUser { get; set; } = new RegisterUser();
+    public LoginUser loginUser { get; set; } = new LoginUser();
+    public bool IsMember { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        List<User> userData = await _httpClient.GetFromJsonAsync<List<User>>("sample-data/users.json");
+        if (userData.Any())
+        {
+            users = userData;
+
+        }
+    }
+
+
+
+    private void ToggleMembership()
+    {
+        IsMember = !IsMember;
+    }
+
+    private void ClearInputs()
+    {
+        registerUser = new RegisterUser();
+        loginUser = new LoginUser();
+    }
+
+    private async Task Login ()
+    {
+        var user = users.Find(user => user.Email == loginUser.Email);
+        if (user == null)
+        {
+            await _jsRuntime.InvokeVoidAsync("ShowMessage", "error", "Invalid Credentials");
+            Console.WriteLine("Invalid Credentials");
+            ClearInputs();
+            return;
+        }
+        var IsValidPassword = user.Password == loginUser.Password;
+
+        if (!IsValidPassword)
+        {
+            await _jsRuntime.InvokeVoidAsync("ShowMessage", "error", "Invalid Credentials");
+            Console.WriteLine("Invalid Credentials");
+            ClearInputs();
+            return;
+        }
+        await _jsRuntime.InvokeVoidAsync("ShowMessage", "success", $"Welcome, {user.FirstName}");
+        Console.WriteLine($"Welcome, {user.FirstName}");
+        _navigate.NavigateTo("/home");
+
+    }
+
+    private void Register()
+    {
+        Console.WriteLine("Sorry, We are not taking in new members. Try again later :(");    
+    }
+
+    private void HandleSubmit()
+    {
+        if (IsMember)
+        {
+            Login();
+        }
+        else
+        {
+            Register();    
+        }
+
+    }
+
+
+}

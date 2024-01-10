@@ -1,0 +1,30 @@
+﻿@page "/home"
+@inject HttpClient _httpClient
+
+<div class="home">
+    <HeroSection></HeroSection>
+    <div class="featured content--center">
+        @foreach (var product in products)
+        {
+            if (product.Featured)
+            {
+                <SingleProduct product="product"></SingleProduct>    
+            }
+        }
+    </div>
+</div>
+
+@code
+{
+    List<Product> products { get; set; } = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var productsData = await _httpClient.GetFromJsonAsync<List<Product>>("sample-data/products.json");
+        if (productsData.Any())
+        {
+            products = productsData;
+        }
+    }
+
+}

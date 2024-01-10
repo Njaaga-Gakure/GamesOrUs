@@ -1,0 +1,50 @@
+﻿<nav class="nav">
+    <div class="content--center nav__center">
+        <div class="logo">
+            <h5 class="logo__text">GamesOrUs</h5>
+        </div>
+        <ul class="nav__links">
+            @foreach (var link in navLinks)
+            {
+                
+                <NavLink class="nav__link" href="@link.Path">@link.Name</NavLink>
+            }
+        </ul>
+        <div class="nav__buttons">
+            <div class="nav__cart">
+                <span class="cart__icon"><ion-icon name="cart-outline"></ion-icon></span>
+                <span class="cart__count">0</span>
+            </div>
+            <NavLink href="/" class="nav__auth"><ion-icon name="log-in-outline"></ion-icon></NavLink>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private List<NavLink> navLinks = new List<NavLink>()
+    {
+        new NavLink()
+        {
+            Name = "Home",
+            Path = "/home"
+        },
+        new NavLink()
+        {
+            Name = "Shop",
+            Path = "/shop"
+        },
+        new NavLink()
+        {
+            Name = "Add Product",
+            Path = "/add-product"
+        }
+
+    };
+
+    public class NavLink
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Path { get; set; } = string.Empty;
+    }
+
+}

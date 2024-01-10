@@ -1,0 +1,16 @@
+﻿<div class="search">
+    <input type="text" @bind-value="@SearchTerm" class="search__input" />
+    <button @onclick="HandleSearch" class="search__btn">search</button>
+</div>
+
+@code {
+    public string SearchTerm { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback<string> OnSearchTermChange { get; set; }
+
+    public async Task HandleSearch()
+    {
+        await OnSearchTermChange.InvokeAsync(SearchTerm);
+    }
+}

@@ -1,0 +1,41 @@
+﻿@page "/shop"
+@inject HttpClient _httpClient
+<div class="shop content--center">
+    <ProductSearch OnSearchTermChange="FilterProducts"></ProductSearch>
+    <div class="products">
+       @if (filteredProducts.Count == 0)
+        {
+            <h5 class="products__zero">
+                No products available :(
+            </h5>
+        }
+        else
+        {
+            @foreach (var product in filteredProducts)
+            {
+                <SingleProduct product="product"></SingleProduct>
+            }
+        }
+    </div>
+
+</div>
+
+@code {
+    List<Product> products { get; set; } = new List<Product>();
+    List<Product> filteredProducts { get; set; } = new List<Product>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var productsData = await _httpClient.GetFromJsonAsync<List<Product>>("sample-data/products.json");
+        if (productsData.Any())
+        {
+            products = productsData;
+            filteredProducts = productsData;
+        }
+    }
+
+    public void FilterProducts(string searchTerm)
+    {
+        filteredProducts = products.FindAll(product => product.Name.ToLower().StartsWith(searchTerm.ToLower()));
+    }
+}
